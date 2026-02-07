@@ -1,0 +1,15 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  auto-release:
+    name: Auto Release
+    uses: mmuhlariholdings/hlavi-workflows/.github/workflows/rust-auto-release.yml@main
+    with:
+      package-name: 'hlavi-tui'
+      binary-name: 'hlavi-tui'
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}

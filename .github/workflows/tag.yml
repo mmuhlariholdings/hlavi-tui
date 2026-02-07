@@ -1,0 +1,25 @@
+name: Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag (e.g., 0.1.4 or v0.1.4)'
+        required: true
+        type: string
+      ref:
+        description: 'Branch, tag, or commit SHA to tag (default: main)'
+        required: false
+        default: 'main'
+        type: string
+
+jobs:
+  tag:
+    name: Create Tag
+    uses: mmuhlariholdings/hlavi-workflows/.github/workflows/rust-tag.yml@main
+    with:
+      version: ${{ inputs.version }}
+      ref: ${{ inputs.ref }}
+      package-name: 'hlavi-tui'
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,36 @@
+[package]
+name = "hlavi-tui"
+version = "0.1.0"
+edition = "2021"
+authors = ["M Muhlari Holdings (Pty) Ltd"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/mmuhlariholdings/hlavi-tui"
+homepage = "https://github.com/mmuhlariholdings/hlavi"
+description = "Interactive TUI for Hlavi kanban task management"
+rust-version = "1.75"
+
+[[bin]]
+name = "hlavi-tui"
+path = "src/main.rs"
+
+[dependencies]
+# Core library - using git dependency with tag for version control
+# Update the tag when a new version of hlavi-core is released
+hlavi-core = { git = "https://github.com/mmuhlariholdings/hlavi-core", tag = "v0.1.5" }
+
+# TUI framework
+ratatui = "0.26"
+crossterm = "0.27"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Error handling
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[dev-dependencies]
+tempfile = "3.8"
