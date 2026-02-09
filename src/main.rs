@@ -1,11 +1,11 @@
 use anyhow::Result;
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind, KeyModifiers},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
-use std::io;
+use std::{io, panic};
 
 mod app;
 mod ui;
@@ -22,6 +22,13 @@ async fn main() -> Result<()> {
         )
         .init();
 
+    // Setup panic hook to restore terminal
+    let default_panic = panic::take_hook();
+    panic::set_hook(Box::new(move |info| {
+        let _ = restore_terminal();
+        default_panic(info);
+    }));
+
     // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -30,24 +37,38 @@ async fn main() -> Result<()> {
     let mut terminal = Terminal::new(backend)?;
 
     // Create app state
-    let mut app = App::new().await?;
+    let app_result = App::new().await;
 
-    // Run the app
-    let res = run_app(&mut terminal, &mut app).await;
+    let res = match app_result {
+        Ok(mut app) => {
+            // Run the app
+            run_app(&mut terminal, &mut app).await
+        }
+        Err(e) => Err(e),
+    };
 
     // Restore terminal
-    disable_raw_mode()?;
-    execute!(
+    restore_terminal()?;
+    let _ = disable_raw_mode();
+    let _ = execute!(
         terminal.backend_mut(),
         LeaveAlternateScreen,
         DisableMouseCapture
-    )?;
-    terminal.show_cursor()?;
+    );
+    let _ = terminal.show_cursor();
 
     if let Err(err) = res {
         eprintln!("Error: {}", err);
+        std::process::exit(1);
     }
 
+    Ok(())
+}
+
+/// Restore terminal to normal state
+fn restore_terminal() -> Result<()> {
+    disable_raw_mode()?;
+    execute!(io::stdout(), LeaveAlternateScreen, DisableMouseCapture)?;
     Ok(())
 }
 
@@ -62,12 +83,19 @@ async fn run_app<B: ratatui::backend::Backend>(
             if let Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
-                        KeyCode::Char('q') => return Ok(()),
+                        // Exit keys
+                        KeyCode::Char('q') | KeyCode::Char('Q') => return Ok(()),
+                        KeyCode::Esc => return Ok(()),
+                        KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                            return Ok(())
+                        }
+                        // Navigation
                         KeyCode::Char('h') | KeyCode::Left => app.move_left(),
                         KeyCode::Char('l') | KeyCode::Right => app.move_right(),
                         KeyCode::Char('j') | KeyCode::Down => app.move_down(),
                         KeyCode::Char('k') | KeyCode::Up => app.move_up(),
-                        KeyCode::Char('r') => app.reload().await?,
+                        // Actions
+                        KeyCode::Char('r') | KeyCode::Char('R') => app.reload().await?,
                         _ => {}
                     }
                 }
