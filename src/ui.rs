@@ -16,7 +16,11 @@ pub fn draw(f: &mut Frame, app: &App) {
 
     // Header
     let header = Paragraph::new("Hlavi TUI - Kanban Board")
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
+        .style(
+            Style::default()
+                .fg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        )
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(header, chunks[0]);
 
@@ -70,7 +74,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         .constraints([Constraint::Min(0), Constraint::Length(1)])
         .split(f.size());
 
-    let help_text = Paragraph::new("h/l: ← →  j/k: ↑ ↓  r: reload  q: quit")
+    let help_text = Paragraph::new("h/l: ← →  j/k: ↑ ↓  r: reload  q/ESC/Ctrl+C: quit")
         .style(Style::default().fg(Color::DarkGray));
     f.render_widget(help_text, help_chunks[1]);
 }

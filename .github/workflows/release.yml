@@ -13,6 +13,9 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Create Release
@@ -22,4 +25,4 @@ jobs:
       binary-name: 'hlavi-tui'
       create-draft-release: ${{ inputs.draft }}
     secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
+      github-token: ${{ secrets.HLAVI_RELEASE_PAT }}

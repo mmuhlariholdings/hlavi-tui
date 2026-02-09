@@ -49,8 +49,8 @@ hlavi-tui
 | `l` or `→` | Move to next column |
 | `j` or `↓` | Move down in current column |
 | `k` or `↑` | Move up in current column |
-| `r` | Reload board |
-| `q` | Quit |
+| `r` or `R` | Reload board |
+| `q`, `Q`, `ESC`, or `Ctrl+C` | Quit application |
 
 ## Documentation
 

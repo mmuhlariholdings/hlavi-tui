@@ -1,6 +1,6 @@
 use anyhow::Result;
-use hlavi_core::{Board, Storage, Ticket, TicketStatus};
 use hlavi_core::storage::file_storage::FileStorage;
+use hlavi_core::{Board, Storage, Ticket, TicketStatus};
 use std::env;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -115,10 +115,7 @@ impl App {
     }
 
     pub fn tickets_in_column(&self, status: TicketStatus) -> Vec<&Ticket> {
-        self.tickets
-            .iter()
-            .filter(|t| t.status == status)
-            .collect()
+        self.tickets.iter().filter(|t| t.status == status).collect()
     }
 
     fn tickets_in_focused_column(&self) -> Vec<&Ticket> {
