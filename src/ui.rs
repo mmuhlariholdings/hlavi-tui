@@ -16,7 +16,11 @@ pub fn draw(f: &mut Frame, app: &App) {
 
     // Header
     let header = Paragraph::new("Hlavi TUI - Kanban Board")
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
+        .style(
+            Style::default()
+                .fg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        )
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(header, chunks[0]);
 
