@@ -1,6 +1,6 @@
 use anyhow::Result;
 use hlavi_core::storage::file_storage::FileStorage;
-use hlavi_core::{Board, Storage, Ticket, TicketStatus};
+use hlavi_core::{Board, Storage, Task, TaskStatus};
 use std::env;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -30,12 +30,12 @@ impl FocusedColumn {
         }
     }
 
-    pub fn status(&self) -> TicketStatus {
+    pub fn status(&self) -> TaskStatus {
         match self {
-            Self::Open => TicketStatus::Open,
-            Self::InProgress => TicketStatus::InProgress,
-            Self::Review => TicketStatus::Review,
-            Self::Done => TicketStatus::Done,
+            Self::Open => TaskStatus::Open,
+            Self::InProgress => TaskStatus::InProgress,
+            Self::Review => TaskStatus::Review,
+            Self::Done => TaskStatus::Done,
         }
     }
 }
@@ -43,7 +43,7 @@ impl FocusedColumn {
 pub struct App {
     storage: FileStorage,
     board: Board,
-    tickets: Vec<Ticket>,
+    tasks: Vec<Task>,
     focused_column: FocusedColumn,
     selected_index: usize,
 }
@@ -53,18 +53,18 @@ impl App {
         let current_dir = env::current_dir()?;
         let storage = FileStorage::new(&current_dir);
         let board = storage.load_board().await?;
-        let mut tickets = Vec::new();
+        let mut tasks = Vec::new();
 
-        for ticket_id in board.tickets.values() {
-            if let Ok(ticket) = storage.load_ticket(ticket_id).await {
-                tickets.push(ticket);
+        for task_id in board.tasks.values() {
+            if let Ok(task) = storage.load_task(task_id).await {
+                tasks.push(task);
             }
         }
 
         Ok(Self {
             storage,
             board,
-            tickets,
+            tasks,
             focused_column: FocusedColumn::Open,
             selected_index: 0,
         })
@@ -72,11 +72,11 @@ impl App {
 
     pub async fn reload(&mut self) -> Result<()> {
         self.board = self.storage.load_board().await?;
-        self.tickets.clear();
+        self.tasks.clear();
 
-        for ticket_id in self.board.tickets.values() {
-            if let Ok(ticket) = self.storage.load_ticket(ticket_id).await {
-                self.tickets.push(ticket);
+        for task_id in self.board.tasks.values() {
+            if let Ok(task) = self.storage.load_task(task_id).await {
+                self.tasks.push(task);
             }
         }
 
@@ -94,9 +94,9 @@ impl App {
     }
 
     pub fn move_down(&mut self) {
-        let tickets_in_column = self.tickets_in_focused_column().len();
-        if tickets_in_column > 0 {
-            self.selected_index = (self.selected_index + 1).min(tickets_in_column - 1);
+        let tasks_in_column = self.tasks_in_focused_column().len();
+        if tasks_in_column > 0 {
+            self.selected_index = (self.selected_index + 1).min(tasks_in_column - 1);
         }
     }
 
@@ -114,11 +114,11 @@ impl App {
         self.selected_index
     }
 
-    pub fn tickets_in_column(&self, status: TicketStatus) -> Vec<&Ticket> {
-        self.tickets.iter().filter(|t| t.status == status).collect()
+    pub fn tasks_in_column(&self, status: TaskStatus) -> Vec<&Task> {
+        self.tasks.iter().filter(|t| t.status == status).collect()
     }
 
-    fn tickets_in_focused_column(&self) -> Vec<&Ticket> {
-        self.tickets_in_column(self.focused_column.status())
+    fn tasks_in_focused_column(&self) -> Vec<&Task> {
+        self.tasks_in_column(self.focused_column.status())
     }
 }

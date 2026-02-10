@@ -54,10 +54,10 @@ hlavi-tui
 
 ## Documentation
 
-The TUI provides a visual, column-based interface for managing your Hlavi tasks. It displays tickets organized by status (TODO, In Progress, Review, Done) in a kanban board layout.
+The TUI provides a visual, column-based interface for managing your Hlavi tasks. It displays tasks organized by status (TODO, In Progress, Review, Done) in a kanban board layout.
 
 Features:
-- **Visual Kanban Board**: See all your tickets organized in columns
+- **Visual Kanban Board**: See all your tasks organized in columns
 - **Keyboard-Driven**: Fast navigation with vi-style keybindings
 - **Acceptance Criteria Tracking**: Visual indicators showing completion progress
 - **Real-time Reload**: Refresh your board instantly

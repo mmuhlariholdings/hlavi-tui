@@ -1,5 +1,5 @@
 use crate::app::{App, FocusedColumn};
-use hlavi_core::TicketStatus;
+use hlavi_core::TaskStatus;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
@@ -41,7 +41,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         "OPEN",
         app,
         FocusedColumn::Open,
-        TicketStatus::Open,
+        TaskStatus::Open,
     );
     draw_column(
         f,
@@ -49,7 +49,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         "IN PROGRESS",
         app,
         FocusedColumn::InProgress,
-        TicketStatus::InProgress,
+        TaskStatus::InProgress,
     );
     draw_column(
         f,
@@ -57,7 +57,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         "REVIEW",
         app,
         FocusedColumn::Review,
-        TicketStatus::Review,
+        TaskStatus::Review,
     );
     draw_column(
         f,
@@ -65,7 +65,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         "DONE",
         app,
         FocusedColumn::Done,
-        TicketStatus::Done,
+        TaskStatus::Done,
     );
 
     // Help text
@@ -85,15 +85,15 @@ fn draw_column(
     title: &str,
     app: &App,
     column: FocusedColumn,
-    status: TicketStatus,
+    status: TaskStatus,
 ) {
     let is_focused = app.focused_column() == column;
-    let tickets = app.tickets_in_column(status);
+    let tasks = app.tasks_in_column(status);
 
-    let items: Vec<ListItem> = tickets
+    let items: Vec<ListItem> = tasks
         .iter()
         .enumerate()
-        .map(|(i, ticket)| {
+        .map(|(i, task)| {
             let is_selected = is_focused && i == app.selected_index();
             let style = if is_selected {
                 Style::default()
@@ -104,18 +104,18 @@ fn draw_column(
                 Style::default()
             };
 
-            let completed = ticket
+            let completed = task
                 .acceptance_criteria
                 .iter()
                 .filter(|ac| ac.completed)
                 .count();
-            let total = ticket.acceptance_criteria.len();
+            let total = task.acceptance_criteria.len();
 
             let content = vec![
                 Line::from(vec![
-                    Span::styled(ticket.id.to_string(), Style::default().fg(Color::Cyan)),
+                    Span::styled(task.id.to_string(), Style::default().fg(Color::Cyan)),
                     Span::raw(" "),
-                    Span::raw(&ticket.title),
+                    Span::raw(&task.title),
                 ]),
                 Line::from(vec![Span::styled(
                     format!("  ✓ {}/{}", completed, total),
@@ -137,7 +137,7 @@ fn draw_column(
         Block::default()
             .borders(Borders::ALL)
             .border_style(border_style)
-            .title(format!(" {} ({}) ", title, tickets.len())),
+            .title(format!(" {} ({}) ", title, tasks.len())),
     );
 
     f.render_widget(list, area);

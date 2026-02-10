@@ -227,8 +227,8 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "hlavi-core"
-version = "0.1.14"
-source = "git+https://github.com/mmuhlariholdings/hlavi-core?tag=v0.1.14#f89ba6d808c540b08464d603901a58dcf44f256c"
+version = "0.1.16"
+source = "git+https://github.com/mmuhlariholdings/hlavi-core?tag=v0.1.16#e38cfc6831563558867ccd4e99c1e72d52db9006"
 dependencies = [
  "anyhow",
  "async-trait",
