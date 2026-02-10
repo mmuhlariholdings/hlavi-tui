@@ -1,4 +1,4 @@
-# hlavi-tui
+# hlavi-tui 
 
 Interactive TUI (Terminal User Interface) for Hlavi kanban task management with AI agent support.
 
