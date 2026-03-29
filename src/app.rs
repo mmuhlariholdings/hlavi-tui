@@ -115,7 +115,13 @@ impl App {
     }
 
     pub fn tasks_in_column(&self, status: TaskStatus) -> Vec<&Task> {
-        self.tasks.iter().filter(|t| t.status == status).collect()
+        let mut col: Vec<&Task> = self.tasks.iter().filter(|t| t.status == status).collect();
+        col.sort_by(|a, b| {
+            b.rank
+                .cmp(&a.rank)
+                .then_with(|| b.updated_at.cmp(&a.updated_at))
+        });
+        col
     }
 
     fn tasks_in_focused_column(&self) -> Vec<&Task> {
